@@ -60,7 +60,7 @@ std::string RingList::getSubstring(Node* start, int count) const {
 }
 
 bool RingList::isValidNumber(const std::string& s) {
-    // Число корректно, если оно состоит из одной цифры или не начинается с '0'
+    // Число корректно, если оно состоит из одной цифры
     return s.size() == 1 || s[0] != '0';
 }
 
