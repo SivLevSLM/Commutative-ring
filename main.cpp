@@ -9,7 +9,7 @@
 #include "ring_list.h"
 #include "bigint.h"
 
-// Безопасный ввод целого числа с проверкой
+// Р‘РµР·РѕРїР°СЃРЅС‹Р№ РІРІРѕРґ С†РµР»РѕРіРѕ С‡РёСЃР»Р° СЃ РїСЂРѕРІРµСЂРєРѕР№
 int safeGetInt(const std::string& prompt) {
     int value;
     while (true) {
@@ -29,7 +29,7 @@ int safeGetInt(const std::string& prompt) {
             }
         }
         if (!valid) {
-            std::cout << "Ошибка! Введите целое число.\n";
+            std::cout << "РћС€РёР±РєР°! Р’РІРµРґРёС‚Рµ С†РµР»РѕРµ С‡РёСЃР»Рѕ.\n";
             continue;
         }
         try {
@@ -37,12 +37,12 @@ int safeGetInt(const std::string& prompt) {
             return value;
         }
         catch (...) {
-            std::cout << "Ошибка! Слишком большое число.\n";
+            std::cout << "РћС€РёР±РєР°! РЎР»РёС€РєРѕРј Р±РѕР»СЊС€РѕРµ С‡РёСЃР»Рѕ.\n";
         }
     }
 }
 
-// Основная функция поиска решения A+B=C в кольце цифр
+// РћСЃРЅРѕРІРЅР°СЏ С„СѓРЅРєС†РёСЏ РїРѕРёСЃРєР° СЂРµС€РµРЅРёСЏ A+B=C РІ РєРѕР»СЊС†Рµ С†РёС„СЂ
 bool solveRing(const std::string& digits, std::string& output) {
     RingList ring;
     ring.buildFromString(digits);
@@ -53,7 +53,7 @@ bool solveRing(const std::string& digits, std::string& output) {
         Node* startNode = ring.getNode(startPos);
         std::string linear = ring.getSubstring(startNode, N);
         for (int len1 = 1; len1 <= N - 2; ++len1) {
-            // Вариант 1: len1 <= len2, длина суммы = len2
+            // Р’Р°СЂРёР°РЅС‚ 1: len1 <= len2, РґР»РёРЅР° СЃСѓРјРјС‹ = len2
             if ((N - len1) % 2 == 0) {
                 int len2 = (N - len1) / 2;
                 int len3 = N - len1 - len2;
@@ -69,7 +69,7 @@ bool solveRing(const std::string& digits, std::string& output) {
                     }
                 }
             }
-            // Вариант 2: len1 <= len2, длина суммы = len2+1
+            // Р’Р°СЂРёР°РЅС‚ 2: len1 <= len2, РґР»РёРЅР° СЃСѓРјРјС‹ = len2+1
             if ((N - len1 - 1) % 2 == 0) {
                 int len2 = (N - len1 - 1) / 2;
                 int len3 = N - len1 - len2;
@@ -85,7 +85,7 @@ bool solveRing(const std::string& digits, std::string& output) {
                     }
                 }
             }
-            // Вариант 3: len1 > len2, длина суммы = len1
+            // Р’Р°СЂРёР°РЅС‚ 3: len1 > len2, РґР»РёРЅР° СЃСѓРјРјС‹ = len1
             int len2 = N - 2 * len1;
             if (len2 > 0 && len2 < len1) {
                 int len3 = N - len1 - len2;
@@ -101,7 +101,7 @@ bool solveRing(const std::string& digits, std::string& output) {
                     }
                 }
             }
-            // Вариант 4: len1 > len2, длина суммы = len1+1
+            // Р’Р°СЂРёР°РЅС‚ 4: len1 > len2, РґР»РёРЅР° СЃСѓРјРјС‹ = len1+1
             len2 = N - 2 * len1 - 1;
             if (len2 > 0 && len2 < len1) {
                 int len3 = N - len1 - len2;
@@ -122,7 +122,7 @@ bool solveRing(const std::string& digits, std::string& output) {
     return false;
 }
 
-// Главная функция
+// Р“Р»Р°РІРЅР°СЏ С„СѓРЅРєС†РёСЏ
 int main() {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
@@ -131,12 +131,12 @@ int main() {
     int choice;
     do {
         system("cls");
-        std::cout << "\n=== Числовое кольцо (A+B=C) ===\n";
-        std::cout << "1. Ввод с клавиатуры\n";
-        std::cout << "2. Ввод из файла\n";
-        std::cout << "3. Случайная генерация\n";
-        std::cout << "0. Выход\n";
-        choice = safeGetInt("Выберите способ: ");
+        std::cout << "\n=== Р§РёСЃР»РѕРІРѕРµ РєРѕР»СЊС†Рѕ (A+B=C) ===\n";
+        std::cout << "1. Р’РІРѕРґ СЃ РєР»Р°РІРёР°С‚СѓСЂС‹\n";
+        std::cout << "2. Р’РІРѕРґ РёР· С„Р°Р№Р»Р°\n";
+        std::cout << "3. РЎР»СѓС‡Р°Р№РЅР°СЏ РіРµРЅРµСЂР°С†РёСЏ\n";
+        std::cout << "0. Р’С‹С…РѕРґ\n";
+        choice = safeGetInt("Р’С‹Р±РµСЂРёС‚Рµ СЃРїРѕСЃРѕР±: ");
         if (choice == 0) break;
 
         std::string digits;
@@ -144,11 +144,11 @@ int main() {
 
         switch (choice) {
         case 1: {
-            std::cout << "Введите строку цифр (без пробелов): ";
+            std::cout << "Р’РІРµРґРёС‚Рµ СЃС‚СЂРѕРєСѓ С†РёС„СЂ (Р±РµР· РїСЂРѕР±РµР»РѕРІ): ";
             std::cin >> digits;
             for (char c : digits) {
                 if (!std::isdigit(static_cast<unsigned char>(c))) {
-                    std::cout << "Ошибка! Можно вводить только цифры.\n";
+                    std::cout << "РћС€РёР±РєР°! РњРѕР¶РЅРѕ РІРІРѕРґРёС‚СЊ С‚РѕР»СЊРєРѕ С†РёС„СЂС‹.\n";
                     ok = false;
                     break;
                 }
@@ -158,18 +158,18 @@ int main() {
         }
         case 2: {
             std::string filename;
-            std::cout << "Введите имя файла: ";
+            std::cout << "Р’РІРµРґРёС‚Рµ РёРјСЏ С„Р°Р№Р»Р°: ";
             std::cin >> filename;
             std::cin.ignore();
             std::ifstream file(filename);
             if (!file.is_open()) {
-                std::cout << "Ошибка открытия файла.\n";
+                std::cout << "РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°.\n";
                 ok = false;
                 break;
             }
             std::getline(file, digits);
             file.close();
-            // Удаляем возможные пробелы и переводы строк
+            // РЈРґР°Р»СЏРµРј РІРѕР·РјРѕР¶РЅС‹Рµ РїСЂРѕР±РµР»С‹ Рё РїРµСЂРµРІРѕРґС‹ СЃС‚СЂРѕРє
             size_t first = digits.find_first_not_of(" \t\n\r");
             if (first != std::string::npos) digits = digits.substr(first);
             size_t last = digits.find_last_not_of(" \t\n\r");
@@ -177,25 +177,25 @@ int main() {
             break;
         }
         case 3: {
-            int len = safeGetInt("Введите длину строки (1..1000): ");
+            int len = safeGetInt("Р’РІРµРґРёС‚Рµ РґР»РёРЅСѓ СЃС‚СЂРѕРєРё (1..1000): ");
             if (len < 1 || len > 1000) {
-                std::cout << "Некорректная длина.\n";
+                std::cout << "РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ РґР»РёРЅР°.\n";
                 ok = false;
                 break;
             }
             digits.clear();
             for (int i = 0; i < len; ++i)
                 digits.push_back('0' + (rand() % 10));
-            std::cout << "Сгенерирована строка: " << digits << "\n";
+            std::cout << "РЎРіРµРЅРµСЂРёСЂРѕРІР°РЅР° СЃС‚СЂРѕРєР°: " << digits << "\n";
             break;
         }
         default:
-            std::cout << "Неверный выбор.\n";
+            std::cout << "РќРµРІРµСЂРЅС‹Р№ РІС‹Р±РѕСЂ.\n";
             ok = false;
         }
 
         if (!ok) {
-            std::cout << "\nНажмите Enter...";
+            std::cout << "\nРќР°Р¶РјРёС‚Рµ Enter...";
             std::cin.get();
             continue;
         }
@@ -210,10 +210,10 @@ int main() {
             else
                 std::cout << "No\n";
         }
-        std::cout << "\nНажмите Enter...";
+        std::cout << "\nРќР°Р¶РјРёС‚Рµ Enter...";
         std::cin.get();
     } while (true);
 
-    std::cout << "Программа завершена.\n";
+    std::cout << "РџСЂРѕРіСЂР°РјРјР° Р·Р°РІРµСЂС€РµРЅР°.\n";
     return 0;
 }
