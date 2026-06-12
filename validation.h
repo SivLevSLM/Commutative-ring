@@ -7,6 +7,6 @@ namespace Validation {
     int getInt();
     int getIntMin(int minValue);
     int getIntRange(int minValue, int maxValue);
-    std::string getValidFile();  // имя существующего файла
-    bool readFileContent(const std::string& filename, std::string& content); // читает первую строку без пробелов
+    std::string getValidFile();  // РёРјСЏ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРіРѕ С„Р°Р№Р»Р°
+    bool readFileContent(const std::string& filename, std::string& content); // С‡РёС‚Р°РµС‚ РїРµСЂРІСѓСЋ СЃС‚СЂРѕРєСѓ Р±РµР· РїСЂРѕР±РµР»РѕРІ
 }
