@@ -1,11 +1,14 @@
+// bigint.cpp
+// Реализация поразрядного сложения строк.
+
 #include "bigint.h"
 #include <algorithm>
 
 std::string add(const std::string& a, const std::string& b) {
     std::string result;
     int carry = 0;
-    int i = static_cast<int>(a.size()) - 1;
-    int j = static_cast<int>(b.size()) - 1;
+    int i = (int)a.size() - 1;
+    int j = (int)b.size() - 1;
 
     while (i >= 0 || j >= 0 || carry) {
         int sum = carry;

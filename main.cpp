@@ -1,23 +1,59 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <windows.h>
+#include <limits>
+#include <cctype>
 #include "ring_list.h"
 #include "bigint.h"
-#include "validation.h"
-#include "node.h" 
-#include <windows.h>
 
-bool solveRing(const RingList& ring, std::string& output) {
+// Безопасный ввод целого числа с проверкой
+int safeGetInt(const std::string& prompt) {
+    int value;
+    while (true) {
+        std::cout << prompt;
+        std::string input;
+        std::getline(std::cin, input);
+        bool valid = true;
+        if (input.empty()) valid = false;
+        else {
+            size_t start = 0;
+            if (input[0] == '-') {
+                if (input.size() == 1) valid = false;
+                else start = 1;
+            }
+            for (size_t i = start; i < input.size() && valid; ++i) {
+                if (!std::isdigit(static_cast<unsigned char>(input[i]))) valid = false;
+            }
+        }
+        if (!valid) {
+            std::cout << "Ошибка! Введите целое число.\n";
+            continue;
+        }
+        try {
+            value = std::stoi(input);
+            return value;
+        }
+        catch (...) {
+            std::cout << "Ошибка! Слишком большое число.\n";
+        }
+    }
+}
+
+// Основная функция поиска решения A+B=C в кольце цифр
+bool solveRing(const std::string& digits, std::string& output) {
+    RingList ring;
+    ring.buildFromString(digits);
     int N = ring.getSize();
     if (N < 3) return false;
 
     for (int startPos = 0; startPos < N; ++startPos) {
         Node* startNode = ring.getNode(startPos);
         std::string linear = ring.getSubstring(startNode, N);
-
         for (int len1 = 1; len1 <= N - 2; ++len1) {
-            // Случай 1: len1 <= len2, len3 = len2
+            // Вариант 1: len1 <= len2, длина суммы = len2
             if ((N - len1) % 2 == 0) {
                 int len2 = (N - len1) / 2;
                 int len3 = N - len1 - len2;
@@ -33,7 +69,7 @@ bool solveRing(const RingList& ring, std::string& output) {
                     }
                 }
             }
-            // Случай 2: len1 <= len2, len3 = len2 + 1
+            // Вариант 2: len1 <= len2, длина суммы = len2+1
             if ((N - len1 - 1) % 2 == 0) {
                 int len2 = (N - len1 - 1) / 2;
                 int len3 = N - len1 - len2;
@@ -49,7 +85,7 @@ bool solveRing(const RingList& ring, std::string& output) {
                     }
                 }
             }
-            // Случай 3: len1 > len2, len3 = len1
+            // Вариант 3: len1 > len2, длина суммы = len1
             int len2 = N - 2 * len1;
             if (len2 > 0 && len2 < len1) {
                 int len3 = N - len1 - len2;
@@ -65,7 +101,7 @@ bool solveRing(const RingList& ring, std::string& output) {
                     }
                 }
             }
-            // Случай 4: len1 > len2, len3 = len1 + 1
+            // Вариант 4: len1 > len2, длина суммы = len1+1
             len2 = N - 2 * len1 - 1;
             if (len2 > 0 && len2 < len1) {
                 int len3 = N - len1 - len2;
@@ -86,89 +122,98 @@ bool solveRing(const RingList& ring, std::string& output) {
     return false;
 }
 
-void showMenu() {
-    std::cout << "\n=== Числовое кольцо (A+B=C) ===\n";
-    std::cout << "1. Ввести кольцо с клавиатуры\n";
-    std::cout << "2. Загрузить кольцо из файла\n";
-    std::cout << "3. Сгенерировать случайное кольцо\n";
-    std::cout << "0. Выход\n";
-    std::cout << "Выберите действие: ";
-}
-
+// Главная функция
 int main() {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
     srand(static_cast<unsigned>(time(nullptr)));
+
     int choice;
     do {
-        showMenu();
-        choice = Validation::getIntRange(0, 3);
+        system("cls");
+        std::cout << "\n=== Числовое кольцо (A+B=C) ===\n";
+        std::cout << "1. Ввод с клавиатуры\n";
+        std::cout << "2. Ввод из файла\n";
+        std::cout << "3. Случайная генерация\n";
+        std::cout << "0. Выход\n";
+        choice = safeGetInt("Выберите способ: ");
+        if (choice == 0) break;
 
-        RingList ring;
-        bool ringReady = false;
+        std::string digits;
+        bool ok = true;
 
         switch (choice) {
         case 1: {
-            std::cin.ignore(10000, '\n');
-            std::cout << "Введите строку цифр (без пробелов, не более 1000): ";
-            std::string digits;
-            std::getline(std::cin, digits);
-            digits.erase(std::remove_if(digits.begin(), digits.end(), ::isspace), digits.end());
-            if (digits.empty()) {
-                std::cout << "Ошибка: пустая строка.\n";
-                break;
+            std::cout << "Введите строку цифр (без пробелов): ";
+            std::cin >> digits;
+            for (char c : digits) {
+                if (!std::isdigit(static_cast<unsigned char>(c))) {
+                    std::cout << "Ошибка! Можно вводить только цифры.\n";
+                    ok = false;
+                    break;
+                }
             }
-            if (digits.size() > 1000) {
-                std::cout << "Ошибка: слишком много цифр (макс. 1000).\n";
-                break;
-            }
-            ring.buildFromString(digits);
-            ringReady = true;
+            std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
             break;
         }
         case 2: {
-            std::cin.ignore(10000, '\n');
+            std::string filename;
             std::cout << "Введите имя файла: ";
-            std::string fname = Validation::getValidFile();
-            std::string content;
-            if (!Validation::readFileContent(fname, content)) {
-                std::cout << "Ошибка чтения файла или файл пуст.\n";
+            std::cin >> filename;
+            std::cin.ignore();
+            std::ifstream file(filename);
+            if (!file.is_open()) {
+                std::cout << "Ошибка открытия файла.\n";
+                ok = false;
                 break;
             }
-            if (content.size() > 1000) {
-                std::cout << "Ошибка: слишком много цифр (макс. 1000).\n";
-                break;
-            }
-            ring.buildFromString(content);
-            ringReady = true;
-            std::cout << "Загружено кольцо: " << content << "\n";
+            std::getline(file, digits);
+            file.close();
+            // Удаляем возможные пробелы и переводы строк
+            size_t first = digits.find_first_not_of(" \t\n\r");
+            if (first != std::string::npos) digits = digits.substr(first);
+            size_t last = digits.find_last_not_of(" \t\n\r");
+            if (last != std::string::npos) digits = digits.substr(0, last + 1);
             break;
         }
         case 3: {
-            std::cout << "Введите количество цифр (не более 1000): ";
-            int n = Validation::getIntRange(1, 1000);
-            ring.fillRandom(n);
-            ringReady = true;
-            std::cout << "Сгенерировано кольцо: " << ring.toString() << "\n";
+            int len = safeGetInt("Введите длину строки (1..1000): ");
+            if (len < 1 || len > 1000) {
+                std::cout << "Некорректная длина.\n";
+                ok = false;
+                break;
+            }
+            digits.clear();
+            for (int i = 0; i < len; ++i)
+                digits.push_back('0' + (rand() % 10));
+            std::cout << "Сгенерирована строка: " << digits << "\n";
             break;
         }
-        case 0:
-            std::cout << "До свидания!\n";
+        default:
+            std::cout << "Неверный выбор.\n";
+            ok = false;
+        }
+
+        if (!ok) {
+            std::cout << "\nНажмите Enter...";
+            std::cin.get();
             continue;
         }
 
-        if (ringReady) {
-            std::cout << "Кольцо: ";
-            ring.print();
-            std::string result;
-            if (solveRing(ring, result)) {
-                std::cout << result << std::endl;
-            }
-            else {
-                std::cout << "No" << std::endl;
-            }
+        if (digits.empty()) {
+            std::cout << "No\n";
         }
-    } while (choice != 0);
+        else {
+            std::string output;
+            if (solveRing(digits, output))
+                std::cout << output << "\n";
+            else
+                std::cout << "No\n";
+        }
+        std::cout << "\nНажмите Enter...";
+        std::cin.get();
+    } while (true);
 
+    std::cout << "Программа завершена.\n";
     return 0;
 }

@@ -1,12 +1,11 @@
+// ring_list.cpp
+// Реализация методов циклического списка
+
 #include "ring_list.h"
-#include <iostream>
-#include <cstdlib>
 
 RingList::RingList() : head(nullptr), size(0) {}
 
-RingList::~RingList() {
-    clear();
-}
+RingList::~RingList() { clear(); }
 
 void RingList::buildFromString(const std::string& digits) {
     clear();
@@ -15,32 +14,19 @@ void RingList::buildFromString(const std::string& digits) {
     head = new Node(digits[0] - '0');
     Node* tail = head;
     size = 1;
+
     for (size_t i = 1; i < digits.size(); ++i) {
         tail->next = new Node(digits[i] - '0');
         tail = tail->next;
         ++size;
     }
-    tail->next = head;
-}
-
-void RingList::fillRandom(int n) {
-    clear();
-    if (n <= 0) return;
-
-    head = new Node(rand() % 10);
-    Node* tail = head;
-    size = 1;
-    for (int i = 1; i < n; ++i) {
-        tail->next = new Node(rand() % 10);
-        tail = tail->next;
-        ++size;
-    }
-    tail->next = head;
+    tail->next = head; // замыкаем кольцо
 }
 
 void RingList::clear() {
     if (!head) return;
 
+    // Разрываем кольцо, чтобы удалить линейно
     Node* cur = head;
     Node* last = head;
     while (last->next != head) last = last->next;
@@ -74,20 +60,8 @@ std::string RingList::getSubstring(Node* start, int count) const {
 }
 
 bool RingList::isValidNumber(const std::string& s) {
+    // Число корректно, если оно состоит из одной цифры или не начинается с '0'
     return s.size() == 1 || s[0] != '0';
-}
-
-void RingList::print() const {
-    if (!head) {
-        std::cout << "������ ����\n";
-        return;
-    }
-    Node* cur = head;
-    for (int i = 0; i < size; ++i) {
-        std::cout << cur->digit;
-        cur = cur->next;
-    }
-    std::cout << "\n";
 }
 
 std::string RingList::toString() const {
