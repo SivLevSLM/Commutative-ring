@@ -1,5 +1,5 @@
-//validation.cpp
-//Работа с проверками ввода и вывода
+// validation.cpp
+// Работа с проверками ввода и вывода
 #include "validation.h"
 #include <iostream>
 #include <fstream>
